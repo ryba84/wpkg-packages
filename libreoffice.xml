@@ -9,24 +9,23 @@
 		reboot="false" 
 		priority="70">
 
-		<variable name="VERSION" value="5.4.4.2" />
-		<variable name="PKG_VERSION" value="5.4.4" />
+		<variable name="EXE_VERSION" value="5.4.4.2" />
+		<variable name="VERSION" value="5.4.4" />
 		<variable name="LOCALE" value="pl-PL,en-US" />
 		<variable name="ARCHITECTURE" value="x86" architecture="x86" />
 		<variable name="ARCHITECTURE" value="x64" architecture="x64" />
 		
-		<check type="uninstall" condition="versiongreaterorequal" path="LibreOffice %version%" value="%version%" />
+		<check type="uninstall" condition="versiongreaterorequal" path="LibreOffice %VERSION%" value="%VERSION%" />
 
 		<install cmd="taskkill /F /IM IPROSetMonitor.exe">
 			<exit code="0" />
 			<exit code="1" />
 			<exit code="128" />
 		</install>
-		<install cmd='msiexec /qb! /i "%SOFTWARE%\LibreOffice\LibreOffice_%PKG_VERSION%_Win_%ARCHITECTURE%.msi" ALLUSERS=1 CREATEDESKTOPLINK=0 REGISTER_ALL_MSO_TYPES=1 ISCHECKFORPRODUCTUPDATES=0 UI_LANGS=%LOCALE%' />
+		<install cmd='msiexec /qb! /i "%SOFTWARE%\LibreOffice\LibreOffice_%VERSION%_Win_%ARCHITECTURE%.msi" ALLUSERS=1 CREATEDESKTOPLINK=0 REGISTER_ALL_MSO_TYPES=1 ISCHECKFORPRODUCTUPDATES=0 UI_LANGS=%LOCALE%' />
 
 		<upgrade include="install" />
 
 		<remove cmd="msiexec /qb! /uninstall {53862C8D-D41F-47A1-A331-664EB405BECA}" />
-
 	</package>
 </packages>

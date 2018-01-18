@@ -5,43 +5,57 @@
     <package
         id="firefox"
         name="Mozilla Firefox"
-        revision="%PKG_VERSION%"
+        revision="%VERSION%"
         reboot="false"
         priority="100">
         <!-- a higher priority is used to install before Java and Flash Player
             without the need to define a dependency -->
-        <variable name="PKG_VERSION"     value="52.5.3" />
-        <variable name="PKG_EXE_VERSION" value="52.5.3" />
+        <variable name="VERSION" value="52.5.3.6569" />
+		<variable name="PKG_VERSION" value="52.5.3" />
+		<variable name="LOCALE" value="pl" />
         <variable name="PKG_DESTINATION" value="%ProgramFiles%\Mozilla Firefox"/>
 		<variable name="ARCHITECTURE" value="x86" architecture="x86" />
 		<variable name="ARCHITECTURE" value="x64" architecture="x64" />
 
-        <!-- default language is English -->
-        <variable name="PKG_LANGUAGE"    value="pl-PL"/>
-
-        <check type="uninstall" condition="versiongreaterorequal" path="Mozilla Firefox .+"            value="%PKG_VERSION%" />
-        <check type="file"      condition="versiongreaterorequal" path="%PKG_DESTINATION%\firefox.exe" value="%PKG_EXE_VERSION%" />
+        <check type="uninstall" condition="exists" path="Mozilla Firefox %PKG_VERSION% ESR (%ARCHITECTURE% %LOCALE%)"/>
+        <check type="file" condition="versiongreaterorequal" path="%PKG_DESTINATION%\firefox.exe" value="%VERSION%" />
 
         <install cmd='"%SOFTWARE%\firefox\%ARCHITECTURE%\Firefox Setup %PKG_VERSION%esr.exe" /INI="%SOFTWARE%\firefox\config.ini"' />
+<!-- Set default configuration -->
 		<install cmd='%COMSPEC% /c copy /y "%SOFTWARE%\firefox\override.ini" "%PKG_DESTINATION%\browser\"' />
 		<install cmd='%COMSPEC% /c copy /y "%SOFTWARE%\firefox\autoconfig.js" "%PKG_DESTINATION%\defaults\pref\"' />
 		<install cmd='%COMSPEC% /c copy /y "%SOFTWARE%\firefox\mozilla.cfg" "%PKG_DESTINATION%\"' />
-		<install cmd='%COMSPEC% /c "%PKG_DESTINATION%\uninstall\helper.exe" /SetAsDefaultAppGlobal' >
+<!-- Set as default www browser -->
+		<install cmd='%COMSPEC% /c "%PKG_DESTINATION%\uninstall\helper.exe" /SetAsDefaultAppGlobal'>
 			<exit code="2" />
 		</install>
-		<!-- Remove unwanted shortcut -->
-		<install cmd='%COMSPEC% /C del "%PUBLIC%\Desktop\Moz*.lnk"'><exit code="0" /></install>
-		
-        <upgrade include='install' />
+<!-- Remove unwanted shortcut -->
+		<install cmd='%COMSPEC% /c del /q "%PUBLIC%\Desktop\Moz*.lnk"' />
 
-        <remove cmd='"%PKG_DESTINATION%\uninstall\helper.exe" /s' />
+		<upgrade include="remove" />
+        <upgrade include="install" />
+
+		<remove cmd="%COMSPEC% /c taskkill /F /IM Firefox.exe">
+			<exit code="0" />
+			<exit code="1" />
+			<exit code="128" />
+		</remove>
+		<remove cmd='%COMSPEC% /c del /q "%PKG_DESTINATION%\browser\override.ini"' />
+		<remove cmd='%COMSPEC% /c del /q "%PKG_DESTINATION%\defaults\pref\autoconfig.js"' />
+		<remove cmd='%COMSPEC% /c del /q "%PKG_DESTINATION%\mozilla.cfg"' />
+        <remove cmd='%COMSPEC% /c if exist "%PKG_DESTINATION%\uninstall\helper.exe" "%PKG_DESTINATION%\uninstall\helper.exe" /S' />
+		<!-- Clean unwanted folders ...
+		<remove cmd='%COMSPEC% /c rmdir /s /q "%PKG_DESTINATION%"' />
+		-->
     </package>
+<!-- Mozilla Firefox metapackage with some addons -->
 	<package
 		id="firefox-with-extensions"
 		name="Mozilla Firefox with default extensions"
-        revision="%PKG_VERSION%"
+        revision="%VERSION%"
         reboot="false"
         priority="100">
+		<variable name="VERSION" value="52.5.3.1" />
 		<depends package-id="ublock-origin" />
 		<depends package-id="ghostery" />
 	</package>
@@ -49,68 +63,84 @@
 	<package
 		id="ublock-origin"
 		name="uBlock Origin - Mozilla Firefox extension"
-        revision="%PKG_VERSION%"
+        revision="%VERSION%"
         reboot="false"
         priority="100">
-		<variable name="PKG_VERSION" value="1.14.24" />
+		<variable name="VERSION" value="1.14.24" />
 		<variable name="EXT_ID" value="uBlock0@raymondhill.net" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles%\Mozilla Firefox\browser\extensions"/>
 		<depends package-id="firefox" />
 		
-		<check type="file" condition="exists" path="%PROGRAMFILES%\Mozilla Firefox\browser\extensions\%EXT_ID%.xpi" />
+		<check type="file" condition="exists" path="%PKG_DESTINATION%\%EXT_ID%.xpi" />
 		
-		<install cmd='%COMSPEC% /c copy /y "%SOFTWARE%\firefox\ublock_origin-%PKG_VERSION%-an+fx.xpi" "%PROGRAMFILES%\Mozilla Firefox\browser\extensions\%EXT_ID%.xpi"'><exit code="0" /></install>
-		
-		<remove cmd='%COMSPEC% /c del /F /Q "%PROGRAMFILES%\Mozilla Firefox\browser\extensions\%EXT_ID%.xpi"'><exit code="0" /></remove>
+		<install cmd='%COMSPEC% /c copy /y "%SOFTWARE%\firefox\ublock_origin-%VERSION%-an+fx.xpi" "%PKG_DESTINATION%\%EXT_ID%.xpi"' />
+		<install cmd='%COMSPEC% /c reg add "HKLM\Software\Mozilla\Firefox\Extensions" /v "%EXT_ID%" /d "%PKG_DESTINATION%\%EXT_ID%" /f' />
 		
 		<upgrade include='remove' />
 		<upgrade include='install' />	
+		
+		<remove cmd='%COMSPEC% /c del /F /Q "%PKG_DESTINATION%\%EXT_ID%.xpi"' />
+		<remove cmd='%COMSPEC% /c reg delete "HKLM\Software\Mozilla\Firefox\Extensions" /v "%EXT_ID%" /f' />
 	</package>
 	<package
 		id="ghostery"
 		name="Ghostery - Mozilla Firefox extension"
-        revision="%PKG_VERSION%"
+        revision="%VERSION%"
         reboot="false"
         priority="100">
-		<variable name="PKG_VERSION" value="8.0.3.1" />
+		<variable name="VERSION" value="8.0.3.1" />
 		<variable name="EXT_ID" value="firefox@ghostery.com" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles%\Mozilla Firefox\browser\extensions"/>
 		<depends package-id="firefox" />
 		
-		<check type="file" condition="exists" path="%PROGRAMFILES%\Mozilla Firefox\browser\extensions\%EXT_ID%.xpi" />
+		<check type="file" condition="exists" path="%PKG_DESTINATION%\%EXT_ID%.xpi" />
 		
-		<install cmd='%COMSPEC% /c copy /y "%SOFTWARE%\firefox\ghostery-%PKG_VERSION%-an+fx.xpi" "%PROGRAMFILES%\Mozilla Firefox\browser\extensions\%EXT_ID%.xpi"'><exit code="0" /></install>
-		
-		<remove cmd='%COMSPEC% /c del /F /Q "%PROGRAMFILES%\Mozilla Firefox\browser\extensions\%EXT_ID%.xpi"'><exit code="0" /></remove>
+		<install cmd='%COMSPEC% /c copy /y "%SOFTWARE%\firefox\ghostery-%VERSION%-an+fx.xpi" "%PKG_DESTINATION%\%EXT_ID%.xpi"' />
+		<install cmd='%COMSPEC% /c reg add "HKLM\Software\Mozilla\Firefox\Extensions" /v "%EXT_ID%" /d "%PKG_DESTINATION%\%EXT_ID%" /f' />
 		
 		<upgrade include='remove' />
 		<upgrade include='install' />
+		
+		<remove cmd='%COMSPEC% /c del /F /Q "%PKG_DESTINATION%\%EXT_ID%.xpi"' />
+		<remove cmd='%COMSPEC% /c reg delete "HKLM\Software\Mozilla\Firefox\Extensions" /v "%EXT_ID%" /f' />
 	</package>
 <!-- Mozilla mail client -->
 	<package
 		id="thunderbird"
 		name="Mozilla Thunderbird"
-		revision="%PKG_VERSION%"
+		revision="%VERSION%"
 		reboot="false"
 		priority="8500">
+		<variable name="VERSION" value="52.5.2.6564" />
 		<variable name="PKG_VERSION" value="52.5.2" />
-		<variable name="locale" value="pl" />
+		<variable name="LOCALE" value="pl" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles%\Mozilla Thunderbird" architecture="x86" />
+		<variable name="PKG_DESTINATION" value="%PROGRAMFILES(x86)%\Mozilla Thunderbird" architecture="x64" />
 		<variable name="ARCHITECTURE" value="x86" architecture="x86" />
 		<variable name="ARCHITECTURE" value="x64" architecture="x64" />
 		
-		<check type="uninstall" condition="exists" path="Mozilla Thunderbird %PKG_VERSION% (%ARCHITECTURE% %locale%)" />
-				  
-		<install cmd="taskkill /F /IM Thunderbird.exe"><exit code="0" /><exit code="-1073741515" /><exit code="128" /></install>
+		<check type="uninstall" condition="exists" path="Mozilla Thunderbird %PKG_VERSION% (%ARCHITECTURE% %LOCALE%)" />
+		<check type="file" condition="versiongreaterorequal" path="%PKG_DESTINATION%\thunderbird.exe" value="%VERSION%" />
+		
+		<install cmd="taskkill /F /IM Thunderbird.exe">
+			<exit code="0" />
+			<exit code="128" />
+			<exit code="-1073741515" />
+		</install>
 		<install cmd='"%SOFTWARE%\thunderbird\Thunderbird Setup %PKG_VERSION%.exe" /INI="%SOFTWARE%\thunderbird\config.ini"' />
-	<!-- Thunderbird als Standard - Email Programm setzen-->
-	<!--	<install cmd='cscript %SOFTWARE%\thunderbird\setdefault-x86.js' architecture="x86"/> -->
-	<!--	<install cmd='cscript %SOFTWARE%\thunderbird\setdefault-x64.js' architecture="x64"/> -->
-		<!-- Remove unwanted shortcut -->
-		<install cmd='%COMSPEC% /C del "%PUBLIC%\Desktop\Moz*.lnk"'><exit code="0" /></install>
-			  
+<!-- Remove unwanted shortcut -->
+		<install cmd='%COMSPEC% /c del "%PUBLIC%\Desktop\Moz*.lnk"'>
+			<exit code="0" />
+		</install>
+		
+		<upgrade include="remove" />
 		<upgrade include="install" />
 				  
-		<remove cmd='taskkill /F /IM thunderbird.exe'><exit code="0" /><exit code="128" /><exit code="-1073741515" /></remove>
-			<!-- for 32bit and 64bit System -->
-		<remove cmd='%COMSPEC% /C if exist "%PROGRAMFILES%\Mozilla Thunderbird\uninstall\helper.exe" "%PROGRAMFILES%\Mozilla Thunderbird\uninstall\helper.exe" -ms' architecture="x86" />
-		<remove cmd='%COMSPEC% /C if exist "%PROGRAMFILES(x86)%\Mozilla Thunderbird\uninstall\helper.exe" "%PROGRAMFILES(x86)%\Mozilla Thunderbird\uninstall\helper.exe" -ms' architecture="x64" />
+		<remove cmd='taskkill /F /IM thunderbird.exe'>
+			<exit code="0" />
+			<exit code="128" />
+			<exit code="-1073741515" />
+		</remove>
+		<remove cmd='%COMSPEC% /c if exist "%PKG_DESTINATION%\uninstall\helper.exe" "%PKG_DESTINATION%\uninstall\helper.exe" -ms' />
 	</package>
 </packages>
