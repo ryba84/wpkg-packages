@@ -9,22 +9,20 @@
 		reboot="false"
 		priority="1">
 
-		<variable name="VERSION" value="18.00" />
-		<variable name="INSTALLERVERSION" value="1800" />
-		<variable name="PKG_EXE_VERSION" value="18.0.0.0" />
-		<variable name="PKG_DESTINATION" value="%ProgramFiles%\7-zip" />
+		<variable name="VERSION" value="18.0.0.0" />
+		<variable name="PKG_VERSION" value="1800" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles%\7-Zip" />
 
-		<check type="file" condition="versiongreaterorequal" path="%PKG_DESTINATION%\7zFM.exe" value="%PKG_EXE_VERSION%" />
+		<check type="file" condition="versiongreaterorequal" path="%PKG_DESTINATION%\7z.exe" value="%VERSION%" />
 
-		<install cmd='msiexec /qn /norestart /i %SOFTWARE%\7zip\7z%INSTALLERVERSION%.msi' architecture="x86" />
-		<install cmd='msiexec /qn /norestart /i %SOFTWARE%\7zip\7z%INSTALLERVERSION%-x64.msi' architecture="x64" />
-		<install cmd="%comspec% /c %SOFTWARE%\7zip\7zext.bat"><exit code="any" /></install>
+		<install cmd='msiexec /qn /norestart /i %SOFTWARE%\7zip\7z%PKG_VERSION%.msi' architecture="x86" />
+		<install cmd='msiexec /qn /norestart /i %SOFTWARE%\7zip\7z%PKG_VERSION%-x64.msi' architecture="x64" />
+<!-- Set 7z as default archive manager -->
+		<install cmd="%comspec% /c %SOFTWARE%\7zip\7zext.bat">
+			<exit code="any" />
+		</install>
 
-		<upgrade include="remove" />
 		<upgrade include="install" />
-
-		<downgrade include="remove" />
-		<downgrade include="install" />
 
 		<remove cmd='wmic product where "name like &apos;7-Zip%%&apos;" call uninstall' /> 
 
