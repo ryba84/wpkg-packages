@@ -18,10 +18,8 @@
 		<install cmd='msiexec /qn /norestart /i %SOFTWARE%\7zip\7z%PKG_VERSION%.msi' architecture="x86" />
 		<install cmd='msiexec /qn /norestart /i %SOFTWARE%\7zip\7z%PKG_VERSION%-x64.msi' architecture="x64" />
 <!-- Set 7z as default archive manager -->
-		<install cmd="%comspec% /c %SOFTWARE%\7zip\7zext.bat">
-			<exit code="any" />
-		</install>
-
+		<install cmd="regedit /s %SOFTWARE%\7zip\7zext.reg"/>
+		
 		<upgrade include="install" />
 
 		<remove cmd='wmic product where "name like &apos;7-Zip%%&apos;" call uninstall' /> 
