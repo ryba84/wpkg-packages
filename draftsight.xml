@@ -21,7 +21,7 @@
 
 		<install cmd='"%PROGRAMFILES%\7-Zip\7z.exe" x "%SOFTWARE%\draftsight\draftsight32.exe" -o"%TEMP%\draftsight-install\"' architecture="x86" />
 		<install cmd='"%PROGRAMFILES%\7-Zip\7z.exe" x "%SOFTWARE%\draftsight\draftsight64.exe" -o"%TEMP%\draftsight-install\"' architecture="x64" />
-		<install cmd='msiexec /qb! /log "c:\logfile.txt" /i "%TEMP%\draftsight-install\DraftSight.msi" TRANSFORMS="%TEMP%\draftsight-install\%LANGUAGE%.mst" ALLUSERS=1 ISCHECKFORPRODUCTUPDATES=0' />
+		<install cmd='msiexec /qb! /log /i "%TEMP%\draftsight-install\DraftSight.msi" TRANSFORMS="%TEMP%\draftsight-install\%LANGUAGE%.mst" ALLUSERS=1 ISCHECKFORPRODUCTUPDATES=0' />
 		<install cmd='%COMSPEC% /c rmdir /S /Q "%TEMP%\draftsight-install"' />
 
 		<upgrade include="install" />
