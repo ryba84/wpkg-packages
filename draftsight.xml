@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- (c)2018 Piotr Rudzki - ryba.lodz@gmail.com -->
+<!-- File version: 0.1							-->
+<packages>
+	<package 
+		id="draftsight" 
+		name="DraftSight CAD Software"
+		revision="%VERSION%"
+		reboot="false"
+		priority="1">
+
+		<variable name="VERSION" value="18.0.0.18150" />
+		<variable name="PKG_VERSION" value="2018" />
+		<variable name="LANGUAGE" value="1045" />
+		<variable name="UNINSTALLKEY" value="{71B42AEA-D13E-4FA3-B765-033FF4122E61}" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles%\Dassault Systemes\DraftSight" />
+
+		<depends package-id="7zip" />
+		
+		<check type="file" condition="versiongreaterorequal" path="%PKG_DESTINATION%\bin\DraftSight.exe" value="%VERSION%" />
+
+		<install cmd='"%PROGRAMFILES%\7-Zip\7z.exe" x "%SOFTWARE%\draftsight\draftsight32.exe" -o"%TEMP%\draftsight-install\"' architecture="x86" />
+		<install cmd='"%PROGRAMFILES%\7-Zip\7z.exe" x "%SOFTWARE%\draftsight\draftsight64.exe" -o"%TEMP%\draftsight-install\"' architecture="x64" />
+		<install cmd='msiexec /qb! /log "c:\logfile.txt" /i "%TEMP%\draftsight-install\DraftSight.msi" TRANSFORMS="%TEMP%\draftsight-install\%LANGUAGE%.mst" ALLUSERS=1 ISCHECKFORPRODUCTUPDATES=0' />
+		<install cmd='%COMSPEC% /c rmdir /S /Q "%TEMP%\draftsight-install"' />
+
+		<upgrade include="install" />
+
+		<remove cmd="msiexec /qb! /uninstall %UNINSTALLKEY%" />
+
+	</package>
+</packages>
