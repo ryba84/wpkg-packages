@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- (c)2018 Piotr Rudzki - ryba.lodz@gmail.com -->
+<!-- File version: 0.1							-->
+<packages>
+	<package 
+		id='vlc' 
+		name='VLC Media Player' 
+		revision="%VERSION%"
+		reboot="false"
+		priority="1">
+
+		<variable name="VERSION" value="2.2.8.0" />
+		<variable name="PKG_VERSION" value="2.2.8" />
+		<variable name="LANGUAGE" value="1045" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles%\VideoLAN\VLC" architecture="x86" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles(x86)%\VideoLAN\VLC" architecture="x64" />
+		
+		<check type="file" condition="versiongreaterorequal" path="%PKG_DESTINATION%\vlc.exe" value="%VERSION%" />
+
+		<install cmd='%SOFTWARE%\vlc\vlc-%PKG_VERSION%-win32.exe /L=%LANGUAGE% /S' architecture="x86" />
+		<install cmd='%SOFTWARE%\vlc\vlc-%PKG_VERSION%-win64.exe /L=%LANGUAGE% /S' architecture="x64" />
+
+		<upgrade include="install" />
+
+		<remove cmd='' /> 
+
+	</package>
+</packages>
