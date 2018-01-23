@@ -22,7 +22,6 @@
 
 		<upgrade include="install" />
 
-		<remove cmd='' /> 
-
+		<remove cmd='%PKG_DESTINATION%\uninstall.exe /S' /> 
 	</package>
 </packages>
