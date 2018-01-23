@@ -12,8 +12,7 @@
 		<variable name="VERSION" value="2.2.8.0" />
 		<variable name="PKG_VERSION" value="2.2.8" />
 		<variable name="LANGUAGE" value="1045" />
-		<variable name="PKG_DESTINATION" value="%ProgramFiles%\VideoLAN\VLC" architecture="x86" />
-		<variable name="PKG_DESTINATION" value="%ProgramFiles(x86)%\VideoLAN\VLC" architecture="x64" />
+		<variable name="PKG_DESTINATION" value="%ProgramFiles%\VideoLAN\VLC" />
 		
 		<check type="file" condition="versiongreaterorequal" path="%PKG_DESTINATION%\vlc.exe" value="%VERSION%" />
 
